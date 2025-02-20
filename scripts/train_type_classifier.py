@@ -39,4 +39,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # Обучение модели
 model = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=500)
 model.fit(X_train, y_train)
+# Оценка
+acc = model.score(X_test, y_test)
+print(f"Точность определителя типа жеста (static/dynamic): {acc:.2f}")
 
