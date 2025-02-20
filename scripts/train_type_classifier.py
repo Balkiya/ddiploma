@@ -36,3 +36,7 @@ X = np.array(X)
 y = np.array(y)
 # Разделение данных
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Обучение модели
+model = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=500)
+model.fit(X_train, y_train)
+
