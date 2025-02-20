@@ -42,4 +42,9 @@ model.fit(X_train, y_train)
 # Оценка
 acc = model.score(X_test, y_test)
 print(f"Точность определителя типа жеста (static/dynamic): {acc:.2f}")
+# Сохранение модели
+with open(MODEL_PATH, 'wb') as f:
+    pickle.dump(model, f)
+
+print("✅ Модель определителя сохранена.")
 
