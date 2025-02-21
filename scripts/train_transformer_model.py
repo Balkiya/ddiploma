@@ -61,4 +61,15 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0.1):
     x = Add()([x, ff])
     x = LayerNormalization(epsilon=1e-6)(x)
     return x
+# === Модель ===
+input_layer = Input(shape=(SEQUENCE_LENGTH, X.shape[2]))
+x = transformer_encoder(input_layer, head_size=64, num_heads=4, ff_dim=128)
+x = transformer_encoder(x, head_size=64, num_heads=4, ff_dim=128)
+x = GlobalAveragePooling1D()(x)
+x = Dense(64, activation="relu")(x)
+output = Dense(len(labels), activation="softmax")(x)
+
+model = Model(inputs=input_layer, outputs=output)
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+model.summary()
 
