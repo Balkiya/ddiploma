@@ -123,6 +123,7 @@ target_names = [index_to_label[i] for i in sorted(index_to_label)]
 
 print("\n📊 === Classification Report (Transformer) ===")
 print(classification_report(y_true, y_pred_classes, target_names=target_names))
-
+print("\n📉 === Confusion Matrix (Transformer) ===")
+print(confusion_matrix(y_true, y_pred_classes))
 
 
