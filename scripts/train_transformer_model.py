@@ -40,4 +40,25 @@ for label in labels:
             sequence.append(keypoints.flatten())
         X.append(sequence)
         y.append(label_map[label])
+X = np.array(X)
+y = to_categorical(y)
+
+# === Разделение данных ===
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# === Transformer Encoder Layer ===
+def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0.1):
+    # Self-attention
+    x = MultiHeadAttention(num_heads=num_heads, key_dim=head_size)(inputs, inputs)
+    x = Dropout(dropout)(x)
+    x = Add()([x, inputs])
+    x = LayerNormalization(epsilon=1e-6)(x)
+
+    # Feed-forward
+    ff = Dense(ff_dim, activation="relu")(x)
+    ff = Dense(inputs.shape[-1])(ff)
+    ff = Dropout(dropout)(ff)
+    x = Add()([x, ff])
+    x = LayerNormalization(epsilon=1e-6)(x)
+    return x
 
