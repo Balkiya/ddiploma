@@ -22,4 +22,8 @@ import pickle
 DATA_DIR = './gesture_type_data/dynamic'
 MODEL_PATH = '../app/models/transformer_dynamic_model.keras'
 SEQUENCE_LENGTH = 30
+# === Загрузка данных ===
+X, y = [], []
+labels = sorted(os.listdir(DATA_DIR))
+label_map = {label: idx for idx, label in enumerate(labels)}
 
