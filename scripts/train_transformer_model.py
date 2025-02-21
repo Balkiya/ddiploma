@@ -18,3 +18,8 @@ from tensorflow.keras.layers import Input, Dense, LayerNormalization, MultiHeadA
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import ModelCheckpoint
 import pickle
+# === Параметры ===
+DATA_DIR = './gesture_type_data/dynamic'
+MODEL_PATH = '../app/models/transformer_dynamic_model.keras'
+SEQUENCE_LENGTH = 30
+
