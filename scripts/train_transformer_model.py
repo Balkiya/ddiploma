@@ -72,4 +72,35 @@ output = Dense(len(labels), activation="softmax")(x)
 model = Model(inputs=input_layer, outputs=output)
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 model.summary()
+# === Обучение ===
+checkpoint = ModelCheckpoint(MODEL_PATH, monitor='val_accuracy', save_best_only=True, verbose=1)
+def plot_training_history(history, title_prefix=""):
+    acc = history.history.get('accuracy')
+    val_acc = history.history.get('val_accuracy')
+    loss = history.history.get('loss')
+    val_loss = history.history.get('val_loss')
+    epochs = range(1, len(acc) + 1)
+
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs, acc, 'bo-', label='Train accuracy')
+    plt.plot(epochs, val_acc, 'ro-', label='Val accuracy')
+    plt.title(f'{title_prefix} Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs, loss, 'bo-', label='Train loss')
+    plt.plot(epochs, val_loss, 'ro-', label='Val loss')
+    plt.title(f'{title_prefix} Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
 
