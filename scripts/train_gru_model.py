@@ -78,3 +78,26 @@ def plot_training_history(history, title_prefix=""):
 
     plt.tight_layout()
     plt.show()
+# === Обучение модели ===
+history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=30, callbacks=[checkpoint])
+plot_training_history(history, title_prefix="GRU")
+
+# === Сохранение label_map ===
+with open('./models/gru_label_map.pkl', 'wb') as f:
+    pickle.dump(label_map, f)
+
+print("✅ GRU-модель обучена и сохранена.")
+
+# === Оценка ===
+y_pred = model.predict(X_test)
+y_pred_classes = np.argmax(y_pred, axis=1)
+y_true = np.argmax(y_test, axis=1)
+
+index_to_label = {v: k for k, v in label_map.items()}
+target_names = [index_to_label[i] for i in sorted(index_to_label)]
+
+print("\n📊 === Classification Report (GRU) ===")
+print(classification_report(y_true, y_pred_classes, target_names=target_names))
+
+print("\n📉 === Confusion Matrix (GRU) ===")
+print(confusion_matrix(y_true, y_pred_classes))
