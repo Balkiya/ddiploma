@@ -32,3 +32,18 @@ for label in labels:
             sequence.append(keypoints.flatten())
         X.append(sequence)
         y.append(label_map[label])
+X = np.array(X)
+y = to_categorical(y)
+
+# === Разделение данных ===
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+# === Создание GRU модели ===
+model = Sequential()
+model.add(GRU(64, return_sequences=True, input_shape=(SEQUENCE_LENGTH, X.shape[2]), activation='relu'))
+model.add(GRU(64, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(len(labels), activation='softmax'))
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
