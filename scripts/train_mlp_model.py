@@ -32,3 +32,9 @@ for label in labels:
             sequence.append(keypoints.flatten())
         X.append(sequence)
         y.append(label_map[label])
+X = np.array(X)  # shape: (samples, 30, 42)
+y = to_categorical(y)
+
+# === Разделение данных ===
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
