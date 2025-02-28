@@ -11,3 +11,32 @@ from tensorflow.keras.utils import to_categorical
 DATA_DIR = './gesture_type_data/dynamic'
 MODEL_PATH = './lstm_dynamic_model.keras'
 SEQUENCE_LENGTH = 30
+# === Загрузка данных ===
+X, y = [], []
+labels = sorted(os.listdir(DATA_DIR))
+label_map = {label: idx for idx, label in enumerate(labels)}
+
+for label in labels:
+    label_dir = os.path.join(DATA_DIR, label)
+    if not os.path.isdir(label_dir):
+        continue
+
+    files = sorted(os.listdir(label_dir))
+    sequences = []
+
+    # Загружаем последовательности (30 файлов подряд)
+    for i in range(len(files) - SEQUENCE_LENGTH):
+        sequence = []
+        for j in range(SEQUENCE_LENGTH):
+            file_path = os.path.join(label_dir, files[i + j])
+            keypoints = np.load(file_path)
+            sequence.append(keypoints.flatten())
+
+        X.append(sequence)
+        y.append(label_map[label])
+
+X = np.array(X)
+y = to_categorical(y)
+
+# === Разделение на обучение и тест ===
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
