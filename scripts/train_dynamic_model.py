@@ -85,3 +85,22 @@ history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=3
 plot_training_history(history, title_prefix="LSTM")
 
 print("✅ Обучение завершено и модель сохранена.")
+# === ОЦЕНКА МОДЕЛИ ===
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Предсказания
+y_pred = model.predict(X_test)
+y_pred_classes = np.argmax(y_pred, axis=1)
+y_true = np.argmax(y_test, axis=1)
+
+# Метки классов
+index_to_label = {v: k for k, v in label_map.items()}
+target_names = [index_to_label[i] for i in sorted(index_to_label)]
+
+# Отчёт
+print("\n📊 === Classification Report ===")
+print(classification_report(y_true, y_pred_classes, target_names=target_names))
+
+# Матрица ошибок
+print("\n📉 === Confusion Matrix ===")
+print(confusion_matrix(y_true, y_pred_classes))
