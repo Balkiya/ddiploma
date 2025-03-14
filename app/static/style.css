@@ -45,4 +45,46 @@ header p {
   margin-bottom: 20px;
   max-width: 100%;
 }
+/* Басқару батырмалары */
+#controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button {
+  background-color: #00ffe1;
+  color: #000;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #00ccb3;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 14px;
+  background-color: transparent;
+  border: 2px solid #00ffe1;
+  color: #00ffe1;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background-color: #00ffe1;
+  color: #000;
+}
 
