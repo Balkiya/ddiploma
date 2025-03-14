@@ -39,4 +39,14 @@ def learn():
     except Exception as e:
         letters = []
     return render_template("learn.html", letters=letters)
+# === Предсказание жеста ===
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+    points = data.get("data", [])
+    gesture_type = data.get("type", "auto")
+
+    if not points:
+        return jsonify(prediction="Нет данных", type="Ошибка")
+
 
