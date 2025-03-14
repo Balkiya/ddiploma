@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kazakh Sign Language Recognizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <header>
+    <h1>Kazakh Sign Language Recognizer</h1>
+    <p>Реалды уақытта қазақша ым-ишараны тану жүйесі</p>
+  </header>
+
+  <video id="video" autoplay playsinline muted></video>
+
+  <div id="controls">
+    <button id="modeBtn" onclick="switchMode()">Режим: auto</button>
+    <button onclick="window.location.href='/learn'">🎓 Оқытуға көшу</button>
+  </div>
+
+  <div id="result">Нәтиже: күтілуде...</div>
+
+  <div class="metrics">
+  <p>Жест түрі: <span id="gestureType">?</span></p>
+  <p>Координаттар саны: <span id="pointsCount">0</span></p>
+</div>
+
+<div class="history">
+  <h3>Алдыңғы нәтижелер</h3>
+  <ul id="history"></ul>
+</div>
+
+<div class="history">
+  <h3>Жинақталған сөз</h3>
+  <p id="collectedWord" style="font-size: 22px; color: #fff;"></p>
+  <button onclick="deleteLastChar()">⌫ Өшіру</button>
+</div>
+
+
+
+</body>
+</html>
