@@ -48,5 +48,33 @@ def predict():
 
     if not points:
         return jsonify(prediction="Нет данных", type="Ошибка")
+    # === Определение типа жеста ===
+    if gesture_type == "auto":
+        flat = np.array(points[-1]).flatten()
+        if flat.shape[0] == 42:
+            gesture_type = type_model.predict([flat])[0]
+        else:
+            return jsonify(prediction="Ошибка: недопустимый вектор", type="Ошибка")
+
+    # === Статический жест ===
+    if gesture_type == "static":
+        flat = np.array(points[-1]).flatten()
+        if len(flat) != 42:
+            return jsonify(prediction="Ошибка: недопустимая длина", type="Ошибка")
+        pred = static_model.predict([flat])[0]
+        return jsonify(prediction=pred, type="static")
+
+    # === Динамический жест ===
+    elif gesture_type == "dynamic":
+        if len(points) < SEQUENCE_LENGTH:
+            return jsonify(prediction="Ожидание кадров...", type="dynamic")
+        sequence = np.array(points[-SEQUENCE_LENGTH:]).reshape(1, SEQUENCE_LENGTH, -1)
+        probs = dynamic_model.predict(sequence)[0]
+        pred_index = int(np.argmax(probs))
+        label = dynamic_labels[pred_index] if pred_index < len(dynamic_labels) else f"Н/Д_{pred_index}"
+        return jsonify(prediction=label, type="dynamic")
+
+    return jsonify(prediction="Неизвестный тип", type="Ошибка")
+
 
 
