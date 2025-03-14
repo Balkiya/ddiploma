@@ -75,6 +75,26 @@ def predict():
         return jsonify(prediction=label, type="dynamic")
 
     return jsonify(prediction="Неизвестный тип", type="Ошибка")
+# === Проверка обучения (правильный ли жест)
+@app.route("/check_gesture", methods=["POST"])
+def check_gesture():
+    data = request.get_json()
+    user_points = np.array(data.get("points", [])).reshape(1, -1)
+    target_letter = data.get("target", "")
+
+    if user_points.shape[1] != 42:
+        return jsonify(match=False, predicted="?", error="Неверный размер входа")
+
+    try:
+        predicted = static_model.predict(user_points)[0]
+    except Exception:
+        predicted = "?"
+
+    return jsonify(match=(predicted == target_letter), predicted=predicted)
+
+# === Запуск
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 
