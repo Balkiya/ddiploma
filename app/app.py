@@ -13,3 +13,30 @@ with open("models/gesture_static_model.pkl", "rb") as f:
     static_model = pickle.load(f)
 
 dynamic_model = load_model("models/lstm_dynamic_model.keras")
+# === Метки для динамики ===
+DYNAMIC_DATA_DIR = '../scripts/gesture_type_data/dynamic'
+dynamic_labels = sorted([
+    folder for folder in os.listdir(DYNAMIC_DATA_DIR)
+    if os.path.isdir(os.path.join(DYNAMIC_DATA_DIR, folder))
+])
+
+SEQUENCE_LENGTH = 30
+
+# === Главная страница ===
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+# === Обучающая страница ===
+@app.route("/learn")
+def learn():
+    try:
+        video_dir = "static/videos"
+        letters = sorted([
+            filename.replace(".mp4", "") for filename in os.listdir(video_dir)
+            if filename.endswith(".mp4")
+        ])
+    except Exception as e:
+        letters = []
+    return render_template("learn.html", letters=letters)
+
