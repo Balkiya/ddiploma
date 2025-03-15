@@ -13,7 +13,7 @@ with open("models/gesture_static_model.pkl", "rb") as f:
     static_model = pickle.load(f)
 
 dynamic_model = load_model("models/lstm_dynamic_model.keras")
-# === Метки для динамики ===
+# === Метки для динамик ===
 DYNAMIC_DATA_DIR = '../scripts/gesture_type_data/dynamic'
 dynamic_labels = sorted([
     folder for folder in os.listdir(DYNAMIC_DATA_DIR)
