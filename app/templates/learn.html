@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <title>Ым-ишараны үйрену</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+
+  <button class="back-btn" onclick="window.location.href='/'">← Артқа</button>
+
+  <header>
+    <h1>🎓 Ым-ишараны үйрену</h1>
+    <p>Букваны таңдап, бейнематериалды қарап, өзіңіз тәжірибе жасап көріңіз</p>
+  </header>
+
+
+
+  <div class="video-box">
+    <video id="videoPlayer" controls></video>
+  </div>
+
+  <div id="controls">
+    <button onclick="startCheck()">✅ Тексеру</button>
+  </div>
+
+  <div>
+    <video id="videoFeed" autoplay muted playsinline></video>
+    <p id="checkResult">Камера арқылы тексеру нәтижесі: ...</p>
+  </div>
+
+  <script>
+    const videoPlayer = document.getElementById("videoPlayer");
+    const letterSelect = document.getElementById("letterSelect");
+    const videoFeed = document.getElementById("videoFeed");
+    const resultText = document.getElementById("checkResult");
+    const SEQUENCE_LENGTH = 30;
+    let keypointBuffer = [];
+
+    function loadVideo() {
+      const letter = letterSelect.value;
+      videoPlayer.src = `/static/videos/${letter}.mp4`;
+      resultText.textContent = "Камера арқылы тексеру нәтижесі: ...";
+    }
+
+    async function startCheck() {
+      const letter = letterSelect.value;
+      if (!letter) return alert("Алдымен әріпті таңдаңыз!");
+
+      const hands = new Hands({
+        locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+      });
+
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      hands.onResults(results => {
+        keypointBuffer = [];
+
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+          const landmarks = results.multiHandLandmarks[0];
+          const points = [];
+
+          for (let lm of landmarks) {
+            points.push(1 - lm.x, lm.y); // зеркалим X
+          }
+
+          keypointBuffer.push(points);
+        }
+      });
+
+      const camera = new Camera(videoFeed, {
+        onFrame: async () => {
+          await hands.send({ image: videoFeed });
+        },
+        width: 480,
+        height: 360,
+      });
+
+      await camera.start();
+
+      setTimeout(() => {
+        if (keypointBuffer.length === 0) {
+          resultText.textContent = "Қол табылмады. Қайталап көріңіз.";
+          resultText.style.color = "#ff8080";
+          return;
+        }
+
+        fetch("/check_gesture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            target: letter,
+            points: keypointBuffer[0]
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.match) {
+            resultText.textContent = `✅ Дұрыс көрсетілді: ${data.predicted}`;
+            resultText.style.color = "#00ff88";
+          } else {
+            resultText.textContent = `❌ Қате: ${data.predicted}`;
+            resultText.style.color = "#ff6b6b";
+          }
+        });
+      }, 4000);
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+</body>
+</html>
