@@ -17,7 +17,15 @@
     <p>Букваны таңдап, бейнематериалды қарап, өзіңіз тәжірибе жасап көріңіз</p>
   </header>
 
-
+  <div class="metrics">
+    <label for="letterSelect">Букваны таңдаңыз:</label>
+    <select id="letterSelect" onchange="loadVideo()">
+      <option value="" disabled selected>Таңдаңыз...</option>
+      {% for letter in letters %}
+        <option value="{{ letter }}">{{ letter }}</option>
+      {% endfor %}
+    </select>
+  </div>
 
   <div class="video-box">
     <video id="videoPlayer" controls></video>
