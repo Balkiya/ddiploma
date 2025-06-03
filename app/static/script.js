@@ -15,6 +15,11 @@ let stableStaticPrediction = "";
 let staticConsistentCount = 0;
 const REQUIRED_STATIC_STABILITY = 3;
 
+let lastDynamicPrediction = "";
+let stableDynamicPrediction = "";
+let dynamicConsistentCount = 0;
+const REQUIRED_DYNAMIC_STABILITY = 3;
+
 const maxHistory = 5;
 const historyList = [];
 let collectedWord = "";
@@ -42,6 +47,7 @@ function deleteLastChar() {
   collectedWord = collectedWord.slice(0, -1);
   updateCollectedWord();
 }
+
 async function loadMediaPipe() {
   const hands = new Hands({
     locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -111,9 +117,25 @@ setInterval(() => {
         document.getElementById("gestureType").innerText = gestureType;
 
         if (gestureType === "dynamic") {
-          document.getElementById("result").innerText = `Нәтиже: ${prediction}`;
-          updateHistory(prediction);
+          // Стабилизация динамических жестов
+          if (prediction === lastDynamicPrediction) {
+            dynamicConsistentCount++;
+          } else {
+            lastDynamicPrediction = prediction;
+            dynamicConsistentCount = 1;
+          }
+
+          if (dynamicConsistentCount >= REQUIRED_DYNAMIC_STABILITY) {
+            if (prediction !== stableDynamicPrediction) {
+              stableDynamicPrediction = prediction;
+              document.getElementById("result").innerText = `Нәтиже: ${prediction}`;
+              updateHistory(prediction);
+              collectedWord += prediction;  // добавление динамических букв
+              updateCollectedWord();
+            }
+          }
         } else if (gestureType === "static") {
+          // Обработка статических жестов
           if (prediction === lastStaticPrediction) {
             staticConsistentCount++;
           } else {
@@ -126,7 +148,7 @@ setInterval(() => {
               stableStaticPrediction = prediction;
               document.getElementById("result").innerText = `Нәтиже: ${prediction}`;
               updateHistory(prediction);
-              collectedWord += prediction;
+              collectedWord += prediction;  // добавление статических букв
               updateCollectedWord();
             }
           }

@@ -5,6 +5,7 @@ from tensorflow.keras.models import load_model
 import os
 
 app = Flask(__name__)
+
 # === Загрузка моделей ===
 with open("models/gesture_type_model.pkl", "rb") as f:
     type_model = pickle.load(f)
@@ -13,6 +14,7 @@ with open("models/gesture_static_model.pkl", "rb") as f:
     static_model = pickle.load(f)
 
 dynamic_model = load_model("models/lstm_dynamic_model.keras")
+
 # === Метки для динамик ===
 DYNAMIC_DATA_DIR = '../scripts/gesture_type_data/dynamic'
 dynamic_labels = sorted([
@@ -22,10 +24,12 @@ dynamic_labels = sorted([
 
 SEQUENCE_LENGTH = 30
 
+
 # === Главная страница ===
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 # === Обучающая страница ===
 @app.route("/learn")
@@ -39,6 +43,8 @@ def learn():
     except Exception as e:
         letters = []
     return render_template("learn.html", letters=letters)
+
+
 # === Предсказание жеста ===
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -48,6 +54,7 @@ def predict():
 
     if not points:
         return jsonify(prediction="Нет данных", type="Ошибка")
+
     # === Определение типа жеста ===
     if gesture_type == "auto":
         flat = np.array(points[-1]).flatten()
@@ -75,7 +82,9 @@ def predict():
         return jsonify(prediction=label, type="dynamic")
 
     return jsonify(prediction="Неизвестный тип", type="Ошибка")
-# === Проверка обучения (правильный ли жест)
+
+
+# === Проверка обучения (правильный ли жест) ===
 @app.route("/check_gesture", methods=["POST"])
 def check_gesture():
     data = request.get_json()
@@ -92,9 +101,7 @@ def check_gesture():
 
     return jsonify(match=(predicted == target_letter), predicted=predicted)
 
-# === Запуск
+
+# === Запуск ===
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
